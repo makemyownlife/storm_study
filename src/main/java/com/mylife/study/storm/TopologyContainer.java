@@ -1,9 +1,13 @@
 package com.mylife.study.storm;
 
+import backtype.storm.Config;
+import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
 import com.mylife.study.storm.bolts.AgintBolt;
 import com.mylife.study.storm.bolts.BonusBolt;
 import com.mylife.study.storm.spout.TicketSpout;
+
+import java.util.concurrent.Executors;
 
 /**
  * Created by zhangyong on 14/10/29.
@@ -19,11 +23,22 @@ public class TopologyContainer {
         builder.setSpout("ticketSpout",new TicketSpout(),2);
 
         //方案
-        builder.setBolt("aagintBolt", new AgintBolt(),2).shuffleGrouping("ticketSpout");
+        builder.setBolt("agintBolt", new AgintBolt(),2).shuffleGrouping("ticketSpout");
 
         //返奖
-        builder.setBolt("bonusBolt" ,new BonusBolt() , 2);
+        builder.setBolt("bonusBolt" ,new BonusBolt() , 2).shuffleGrouping("agintBolt");
 
+        Config conf = new Config();
+        conf.setDebug(false);
+        conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 1);
+        LocalCluster cluster = new LocalCluster();
+        cluster.submitTopology("CalculateToplogy", conf, builder.createTopology());
+        try {
+            Thread.sleep(100000000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        cluster.shutdown();
     }
 
     public void stop() {
