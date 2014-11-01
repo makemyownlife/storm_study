@@ -17,7 +17,7 @@ public class BonusBolt extends BaseBasicBolt {
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
-        logger.info("execute bonusbolt:" + tuple.getString(0));
+        logger.info("execute bonusbolt:" + this + " " + tuple.getString(0));
     }
 
     @Override

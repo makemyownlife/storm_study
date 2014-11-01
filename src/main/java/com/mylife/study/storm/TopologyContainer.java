@@ -22,11 +22,11 @@ public class TopologyContainer {
         //得到ticket相关数据 队列中 或者其他的东西
         builder.setSpout("ticketSpout",new TicketSpout());
 
-        //方案 每个方案的金额
-        builder.setBolt("agintBolt", new AgintBolt()).shuffleGrouping("ticketSpout");
+        //方案 每个方案的金额 若是不同的线程执行 对象是不一样的，还是会重新创建新的 bolt 对象
+        builder.setBolt("agintBolt", new AgintBolt(),2).shuffleGrouping("ticketSpout");
 
         //返奖 将金额写入到表中
-        builder.setBolt("bonusBolt" ,new BonusBolt()).shuffleGrouping("agintBolt");
+        builder.setBolt("bonusBolt" ,new BonusBolt(),2).shuffleGrouping("agintBolt");
 
         Config conf = new Config();
         conf.setDebug(false);
