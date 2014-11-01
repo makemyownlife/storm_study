@@ -22,10 +22,10 @@ public class TopologyContainer {
         //得到ticket相关数据 队列中 或者其他的东西
         builder.setSpout("ticketSpout",new TicketSpout());
 
-        //方案
+        //方案 每个方案的金额
         builder.setBolt("agintBolt", new AgintBolt()).shuffleGrouping("ticketSpout");
 
-        //返奖
+        //返奖 将金额写入到表中
         builder.setBolt("bonusBolt" ,new BonusBolt()).shuffleGrouping("agintBolt");
 
         Config conf = new Config();

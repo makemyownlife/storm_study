@@ -29,9 +29,9 @@ public class TicketSpout extends BaseRichSpout {
     @Override
     public void open(Map map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
         try {
-            log.error("TicketSpout初始化开始");
+            log.info("TicketSpout初始化开始");
             this.collector = spoutOutputCollector;
-            log.error("TicketSpout初始化结束");
+            log.info("TicketSpout初始化结束");
         } catch (Exception e) {
             log.error("TicketSpout初始化出错：", e);
         }
