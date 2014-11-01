@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by zhangyong on 14/10/30.
@@ -40,12 +41,17 @@ public class TicketSpout extends BaseRichSpout {
     @Override
     public void nextTuple() {
         log.info("nextuple ka开始");
-        collector.emit(new Values("mylife"), "mylife");
+        int ran = new Random().nextInt(10);
+        collector.emit(new Values(String.valueOf(ran)), "mylife" + ran);
         try {
-            Thread.sleep(10000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println();
     }
 
 }
