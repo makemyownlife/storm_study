@@ -20,13 +20,13 @@ public class TopologyContainer {
         TopologyBuilder builder = new TopologyBuilder();
 
         //得到ticket相关数据 队列中 或者其他的东西
-        builder.setSpout("ticketSpout",new TicketSpout(),2);
+        builder.setSpout("ticketSpout",new TicketSpout());
 
         //方案
-        builder.setBolt("agintBolt", new AgintBolt(),2).shuffleGrouping("ticketSpout");
+        builder.setBolt("agintBolt", new AgintBolt()).shuffleGrouping("ticketSpout");
 
         //返奖
-        builder.setBolt("bonusBolt" ,new BonusBolt() , 2).shuffleGrouping("agintBolt");
+     //   builder.setBolt("bonusBolt" ,new BonusBolt()).shuffleGrouping("agintBolt");
 
         Config conf = new Config();
         conf.setDebug(false);
@@ -44,6 +44,5 @@ public class TopologyContainer {
     public void stop() {
 
     }
-
 
 }
