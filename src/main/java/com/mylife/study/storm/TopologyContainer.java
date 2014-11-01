@@ -27,13 +27,15 @@ public class TopologyContainer {
 
         //还有一个问题 就是 比如我起 两个agiintbolt 是每台机器两个？ 还是每个jvm两个？ 我需要弄明白
       //builder.setBolt("agintBolt", new AgintBolt(),2).shuffleGrouping("ticketSpout");
-        builder.setBolt("agintBolt", new AgintBolt(),10).customGrouping("ticketSpout", new HashCustomStreamGrouping());
+        builder.setBolt("agintBolt", new AgintBolt(),1).customGrouping("ticketSpout", new HashCustomStreamGrouping());
 
         //返奖 将金额写入到表中
         builder.setBolt("bonusBolt" ,new BonusBolt(),2).shuffleGrouping("agintBolt");
 
         Config conf = new Config();
         conf.setDebug(false);
+        //这里是进程数
+        //conf.setNumWorkers(10);
         conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 1);
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("CalculateToplogy", conf, builder.createTopology());
