@@ -6,7 +6,8 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -16,11 +17,9 @@ import java.util.Map;
  */
 public class TicketSpout extends BaseRichSpout {
 
-    private static Logger log = Logger.getLogger(TicketSpout.class);
+    private static Logger log = LoggerFactory.getLogger(TicketSpout.class);
 
     private SpoutOutputCollector collector;
-
-    private volatile boolean end = false;
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
@@ -41,10 +40,7 @@ public class TicketSpout extends BaseRichSpout {
     @Override
     public void nextTuple() {
         log.info("nextuple ka开始");
-        if(!end) {
-            collector.emit(new Values("mylife"), "mylife");
-            end = true;
-        }
+        collector.emit(new Values("mylife"), "mylife");
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {

@@ -7,9 +7,12 @@ import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.topology.base.BaseRichBolt;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
-import org.apache.log4j.Logger;
+import com.elong.pb.common.util.security.MD5Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -19,18 +22,18 @@ import java.util.Map;
  */
 public class AgintBolt extends BaseBasicBolt{
 
-    private static Logger log = Logger.getLogger(AgintBolt.class);
+    private static Logger log = LoggerFactory.getLogger(AgintBolt.class);
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
         String word = input.getString(0);
-        log.info("agintBolt:" + input.getString(0));
-        collector.emit(new Values(word));
+        log.info("agintBolt:" + word);
+        collector.emit(new Values(MD5Util.md5Hex(word)));
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        log.info("declareOutputFields");
+        outputFieldsDeclarer.declare(new Fields("word"));
     }
 
 }

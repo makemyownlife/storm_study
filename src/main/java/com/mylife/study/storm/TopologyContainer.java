@@ -26,7 +26,7 @@ public class TopologyContainer {
         builder.setBolt("agintBolt", new AgintBolt()).shuffleGrouping("ticketSpout");
 
         //返奖
-     //   builder.setBolt("bonusBolt" ,new BonusBolt()).shuffleGrouping("agintBolt");
+        builder.setBolt("bonusBolt" ,new BonusBolt()).shuffleGrouping("agintBolt");
 
         Config conf = new Config();
         conf.setDebug(false);
