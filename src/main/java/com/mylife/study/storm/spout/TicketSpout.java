@@ -46,7 +46,7 @@ public class TicketSpout extends BaseRichSpout {
             end = true;
         }
         try {
-            Thread.sleep(100);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
