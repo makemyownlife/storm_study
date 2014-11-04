@@ -2,11 +2,16 @@ package com.mylife.study.storm;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
+import backtype.storm.StormSubmitter;
+import backtype.storm.generated.AlreadyAliveException;
+import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.topology.TopologyBuilder;
 import com.mylife.study.storm.bolts.AgintBolt;
 import com.mylife.study.storm.bolts.BonusBolt;
 import com.mylife.study.storm.bolts.group.HashCustomStreamGrouping;
 import com.mylife.study.storm.spout.TicketSpout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 
@@ -16,6 +21,9 @@ import java.util.concurrent.Executors;
  * 算奖拓扑接口
  */
 public class TopologyContainer {
+
+    //1 ./storm jar Getting-Started-0.0.1-SNAPSHOT.jar TopologyMain words.txt
+    private static Logger log = LoggerFactory.getLogger(TopologyContainer.class);
 
     public void start() {
         TopologyBuilder builder = new TopologyBuilder();
@@ -27,7 +35,7 @@ public class TopologyContainer {
 
         //还有一个问题 就是 比如我起 两个agiintbolt 是每台机器两个？ 还是每个jvm两个？ 我需要弄明白
       //builder.setBolt("agintBolt", new AgintBolt(),2).shuffleGrouping("ticketSpout");
-        builder.setBolt("agintBolt", new AgintBolt(),10).customGrouping("ticketSpout", new HashCustomStreamGrouping());
+        builder.setBolt("agintBolt", new AgintBolt(), 10).customGrouping("ticketSpout", new HashCustomStreamGrouping());
 
         //返奖 将金额写入到表中
         builder.setBolt("bonusBolt" ,new BonusBolt(),2).shuffleGrouping("agintBolt");
@@ -35,16 +43,30 @@ public class TopologyContainer {
         Config conf = new Config();
         conf.setDebug(false);
         //这里是进程数
-        //conf.setNumWorkers(10);
+        conf.setNumWorkers(2);
         conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 1);
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("CalculateToplogy", conf, builder.createTopology());
+
         try {
-            Thread.sleep(100000000);
-        }catch (Exception e){
-            e.printStackTrace();
+            if (log.isInfoEnabled())
+                log.info("开始提交topology到storm");
+            StormSubmitter.submitTopology("Calculate-ticket-Topology", conf, builder.createTopology());
+            if (log.isInfoEnabled())
+                log.info("成功提交topology到storm");
+        } catch (AlreadyAliveException e) {
+            if (log.isErrorEnabled())
+                log.error("该topology已存在", e);
+        } catch (InvalidTopologyException e) {
+            if (log.isErrorEnabled())
+                log.error("提交topology出错", e);
         }
-        cluster.shutdown();
+//        LocalCluster cluster = new LocalCluster();
+//        cluster.submitTopology("CalculateToplogy", conf, builder.createTopology());
+//        try {
+//            Thread.sleep(100000000);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        cluster.shutdown();
     }
 
     public void stop() {
